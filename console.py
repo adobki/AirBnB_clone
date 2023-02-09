@@ -5,8 +5,7 @@ class HBNBCommand(cmd.Cmd):
 	intro = 'ALX Software Engineering Command line. Type help or ? to list commands.'
 	prompt= '(hbnb)'
 	file = None
-	print('EOF help quit')
-
+	
 	# -- Quit the shell
 	def do_quit(self, arg):
 		'Quit command to exit the program(quit)'
