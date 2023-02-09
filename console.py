@@ -4,6 +4,7 @@ class HBNBCommand(cmd.Cmd):
 	"""Initialize the command line"""
 	intro = 'ALX Software Engineering Command line'
 	prompt= '(hbnb)'
+	print('EOF help quit')
 
 	# -- Quit the shell
 	def do_quit(self):
