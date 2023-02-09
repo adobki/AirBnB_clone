@@ -2,6 +2,7 @@
 """Contains the base class for the module."""
 from datetime import datetime
 from uuid import UUID, uuid4
+from models import storage
 
 
 class BaseModel:
@@ -33,6 +34,7 @@ class BaseModel:
             self.created_at = datetime.now().isoformat()
             if hasattr(self, 'updated_at'):
                 delattr(self, 'updated_at')
+            storage.new(self)
             return
 
         # Validate created_at and set to current time if invalid/null
@@ -50,13 +52,12 @@ class BaseModel:
 
     def __str__(self):
         """Returns a special string when instance is passed to print()."""
-        # return '[{}] ({}) {}'.format(self.__class__.__name__, self.id,
-        #                              self.__dict__)
         return f'[{self.__class__.__name__}] ({self.id}) {self.__dict__}'
 
     def save(self):
         """Updates updated_at attribute with the current datetime."""
         self.updated_at = datetime.now().isoformat()
+        storage.save()
 
     def to_dict(self):
         """Returns dictionary of all keys/values of instance's  __dict__."""
