@@ -1,5 +1,6 @@
-![ALX logo](
-https://images.app.goo.gl/PBLSfb4zLdzTrEid9)
+<p align = 'center'>
+<img src = download.png , alt = 'ALX LOGO' ></img>
+</p>
 
 # AirBnB Clone - Console
 
