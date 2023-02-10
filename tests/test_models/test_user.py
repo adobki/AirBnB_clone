@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+"""testing User"""
+
+import unittest
+import pep8
+from models.user import User
+
+class User_testing(object):
+	""" Checks the base model """
+	
+	def testpep8(self):
+		"""testing the style of code"""
+		pepstylecode = pep8.StyleGuide(quiet = True)
+		path_user = 'models/user.py'
+		result = pepstylecode.check_files([path_user])
+		self.assertEqual(result.total_errors, 0,
+						 "Found Codestyle Errors and Warnings")
