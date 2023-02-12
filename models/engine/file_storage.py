@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """Contains the class for the module's file storage I/O operations."""
 import json
-# from uuid import UUID, uuid4
 
 
 class FileStorage:
@@ -19,10 +18,9 @@ class FileStorage:
     def new(self, obj):
         """Stores obj's attributes in __objects dictionary."""
         my_dict = {}
-        # for key in obj.__dict__:
         for key in obj.to_dict():
             if key != '__class__':
-                my_dict[key] = obj.__dict__[key]
+                my_dict[key] = obj.to_dict()[key]
         uuid_key = '{}.{}'.format(obj.__class__.__name__, obj.id)
         self.__objects[uuid_key] = my_dict
 
@@ -44,72 +42,19 @@ class FileStorage:
         except FileNotFoundError:
             pass
 
-        # """Sets in __objects the obj with key <obj class name>.id."""
-        # """Set attributes for new/deserialized BaseModel instance."""
-        # Parse given arguments as attributes of created instance
-        # if kwargs:
-        #     for key in kwargs:
-        #         if key != '__class__':
-        #             setattr(self, key, kwargs[key])
-        # elif args:
-        #     attributes = ('id', 'created_at', 'updated_at')
-        #     for index in range(len(args)):
-        #         if index == len(attributes):
-        #             break
-        #         else:
-        #             setattr(self, attributes[index], args[index])
-        # else:
-        #     self.id = None
-        #
-        # # Validate created_at and set to current time if invalid/null
-        # try:
-        #     datetime(self.created_at)
-        # except Exception:
-        #     self.created_at = datetime.now()
+    def delete(self, obj):
+        """Permanently deletes obj from storage."""
 
+        # Check if an instance of given object's type currently exists
+        self.reload()
+        models_list = list(map(lambda key: key.split('.')[0],
+                               self.__objects.keys()))
+        if obj.__class__.__name__ not in set(models_list):
+            return
 
-if __name__ == '__main__':
-    # import cmd
-    # print(cmd.Cmd)
-    my_dict = {'__class__': 'BaseModel',
-               'id': '72111833-90f2-4c97-9d21-a1d146681f7b',
-               'created_at': '2022-11-09T09:49:18.111316',
-               'updated_at': '2022-11-09T09:49:18.111316'}
-    print(f'{my_dict}\n')
-    __objects = {}
-    obj_dict = my_dict
-    # obj_dict = obj.to_dict()
-    for key in obj_dict:
-        if key != '__class__':
-            new_key = '{}.{}'.format(obj_dict['__class__'], key)
-            __objects[new_key] = obj_dict[key]
-    print(__objects)
-
-    class BaseModel:
-        pass
-
-    obj = BaseModel()
-    obj.id = '72111833-90f2-4c97-9d21-a1d146681f7b'
-    obj.created_at = '2022-11-09T09:49:18.111316'
-    obj.updated_at = '2022-11-09T09:49:18.111316'
-    print(obj.__dict__)
-    __objects = {}
-    for key in obj.__dict__:
-        new_key = '{}.{}'.format(obj.__class__.__name__, key)
-        __objects[new_key] = obj_dict[key]
-    print(json.dumps(__objects))
-    print(json.loads(json.dumps(__objects)))
-
-    # my_dict = {'__class__': 'BaseModel',
-    #            'id': '72111833-90f2-4c97-9d21-a1d146681f7b',
-    #            'created_at': '2022-11-09T09:49:18.111316',
-    #            'updated_at': '2022-11-09T09:49:18.111316'}
-    # dct = FileStorage(**my_dict)
-    # print('\n{}'.format(dct))
-    # print(dct.to_dict())
-    #
-    # my_str = ['72111833-90f2-4c97-9d21-a1d146681f7b',
-    #           '2022-11-09T09:49:18.111316', '2022-11-09T09:49:18.111316']
-    # dct = FileStorage(my_str[0], my_str[1], my_str[2])
-    # print('\n{}'.format(dct))
-    # print(dct.to_dict())
+        # Find given object instance and delete it
+        obj_id = f'{obj.__class__.__name__}.{obj.id}'
+        if obj_id in self.__objects.keys():
+            str = self.__objects.pop(obj_id)
+            self.save()
+            return str
