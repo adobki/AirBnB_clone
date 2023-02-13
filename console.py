@@ -15,7 +15,6 @@ class HBNBCommand(cmd.Cmd):
     """Entry point of the command interpreter."""
 
     # Initialize the command line
-    intro = 'ALX SE AirBnB Clone. Type help or ? to list commands.'
     prompt = '(hbnb) '
     file = None
     models_list = ['BaseModel', 'User', 'Place', 'State',
@@ -182,7 +181,6 @@ class HBNBCommand(cmd.Cmd):
             return
 
         # Get list of all available model instances/objects
-        # objs = list(map(lambda obj: obj, storage.all().values()))
         saved_models = storage.all()
         if not saved_models:
             return
