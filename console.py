@@ -1,8 +1,14 @@
 #!/usr/bin/python3
 """Command interpreter to issue commands for object management in AirBnb."""
 import cmd
-from models.base_model import BaseModel
 from models import storage
+from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
@@ -12,7 +18,8 @@ class HBNBCommand(cmd.Cmd):
     intro = 'ALX SE AirBnB Clone. Type help or ? to list commands.'
     prompt = '(hbnb) '
     file = None
-    models_list = ['BaseModel']
+    models_list = ['BaseModel', 'User', 'Place', 'State',
+                   'City', 'Amenity', 'Review']
 
     # -- Quit the shell
     def do_quit(self, arg):
@@ -37,14 +44,33 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, model):
         """Creates instance of given model class, saves it, prints its id."""
+
         if not model:
             print('** class name missing **')
-        elif model == 'BaseModel':
+            return
+
+        # Create instance according to model/object class
+        if model == 'BaseModel':
             obj = BaseModel()
-            obj.save()
-            print(obj.id)
+        elif model == 'User':
+            obj = User()
+        elif model == 'Place':
+            obj = Place()
+        elif model == 'State':
+            obj = State()
+        elif model == 'City':
+            obj = City()
+        elif model == 'Amenity':
+            obj = Amenity()
+        elif model == 'Review':
+            obj = Review()
         else:
             print("** class doesn't exist **")
+            return
+
+        # Save object, then print its id.
+        obj.save()
+        print(obj.id)
 
     def _get_obj_instances(self, model, id=None, get_all=False):
         """Helper function for retrieving all instances, or by class and id.
@@ -87,8 +113,20 @@ class HBNBCommand(cmd.Cmd):
             obj_id = args.split()[1]
             obj = self._get_obj_instances(obj_class, obj_id)
             if obj:
-                # noinspection PyArgumentList
-                print(BaseModel(**obj))
+                if obj_class == 'User':
+                    print(User(**obj))
+                elif obj_class == 'Place':
+                    print(Place(**obj))
+                elif obj_class == 'State':
+                    print(State(**obj))
+                elif obj_class == 'City':
+                    print(City(**obj))
+                elif obj_class == 'Amenity':
+                    print(Amenity(**obj))
+                elif obj_class == 'Review':
+                    print(Review(**obj))
+                else:
+                    print(BaseModel(**obj))
             else:
                 print('** no instance found **')
 
@@ -116,8 +154,23 @@ class HBNBCommand(cmd.Cmd):
             obj_class = args.split()[0]
             obj_id = args.split()[1]
             obj = self._get_obj_instances(obj_class, obj_id)
-            if not obj or not storage.delete(BaseModel(**obj)):
+            if not obj:
                 print('** no instance found **')
+            else:
+                if obj_class == 'User':
+                    storage.delete(User(**obj))
+                elif obj_class == 'Place':
+                    storage.delete(Place(**obj))
+                elif obj_class == 'State':
+                    storage.delete(State(**obj))
+                elif obj_class == 'City':
+                    storage.delete(City(**obj))
+                elif obj_class == 'Amenity':
+                    storage.delete(Amenity(**obj))
+                elif obj_class == 'Review':
+                    storage.delete(Review(**obj))
+                else:
+                    storage.delete(BaseModel(**obj))
 
     def do_all(self, args):
         """Prints string representation of all available instances. If class \
@@ -129,18 +182,31 @@ class HBNBCommand(cmd.Cmd):
             return
 
         # Get list of all available model instances/objects
-        objs = list(map(lambda obj: obj, storage.all().values()))
-        if not objs:
+        # objs = list(map(lambda obj: obj, storage.all().values()))
+        saved_models = storage.all()
+        if not saved_models:
             return
 
         # Print list of all objects or only the given one
-        for obj in objs:
-            my_str = BaseModel(**obj).__str__()
-            obj_class = my_str.split()[0][1:-1]
-            if args and obj_class == args:
-                print(my_str)
+        for key in saved_models.keys():
+            obj_class = key.split('.')[0]
+            obj = saved_models[key]
+            if obj_class == 'BaseModel':
+                print(BaseModel(**obj))
+            elif obj_class == 'User':
+                print(User(**obj))
+            elif obj_class == 'Place':
+                print(Place(**obj))
+            elif obj_class == 'State':
+                print(State(**obj))
+            elif obj_class == 'City':
+                print(City(**obj))
+            elif obj_class == 'Amenity':
+                print(Amenity(**obj))
+            elif obj_class == 'Review':
+                print(Review(**obj))
             else:
-                print(my_str)
+                print(obj)
 
     def help_all(self):
         """Pretty prints help text for all command."""
@@ -194,7 +260,20 @@ class HBNBCommand(cmd.Cmd):
             pass
 
         # Update or add attribute value in instance
-        obj = BaseModel(**obj)
+        if obj_class == 'BaseModel':
+            obj = BaseModel(**obj)
+        elif obj_class == 'User':
+            obj = User(**obj)
+        elif obj_class == 'Place':
+            obj = Place(**obj)
+        elif obj_class == 'State':
+            obj = State(**obj)
+        elif obj_class == 'City':
+            obj = City(**obj)
+        elif obj_class == 'Amenity':
+            obj = Amenity(**obj)
+        elif obj_class == 'Review':
+            obj = Review(**obj)
         setattr(obj, obj_attr, obj_val)
         obj.save()
 
